@@ -155,7 +155,7 @@ public class AwsSdkS3BinaryStore implements BinaryStore {
                 chunckableInputStream.unread(1);
                 File tempFile = File.createTempFile( entity.getUuid().toString().concat("-part").concat(String.valueOf(partNumber)), "tmp" );
 
-                //tempFile.deleteOnExit();
+                tempFile.deleteOnExit();
                 OutputStream os = null;
                 try {
                     os = new BufferedOutputStream( new FileOutputStream( tempFile.getAbsolutePath() ) );
