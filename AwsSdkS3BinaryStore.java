@@ -47,6 +47,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
 import com.amazonaws.services.s3.model.CompleteMultipartUploadResult;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
 import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -141,6 +142,7 @@ public class AwsSdkS3BinaryStore implements BinaryStore {
         else { // bigger than 5mb... dump 5 mb tmp files and upload from them
             written = 0; //reset written to 0, we still haven't wrote anything in fact
             int partNumber = 1;
+            int firstByte = 0;
             Boolean isFirstChunck = true;
             List<PartETag> partETags = new ArrayList<PartETag>();
             
@@ -149,10 +151,10 @@ public class AwsSdkS3BinaryStore implements BinaryStore {
             
             InputStream firstChunck = new ByteArrayInputStream(data);
             PushbackInputStream chunckableInputStream = new PushbackInputStream(inputStream, 1);
-            
-            while (chunckableInputStream.read() != -1 || isFirstChunck) {
+
+            while (-1 != (firstByte = chunckableInputStream.read())) {
                 long partSize = 0;
-                chunckableInputStream.unread(1);
+                chunckableInputStream.unread(firstByte);
                 File tempFile = File.createTempFile( entity.getUuid().toString().concat("-part").concat(String.valueOf(partNumber)), "tmp" );
 
                 tempFile.deleteOnExit();
@@ -190,6 +192,7 @@ public class AwsSdkS3BinaryStore implements BinaryStore {
             
             CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(bucketName, uploadFileName, initResponse.getUploadId(), partETags);
             CompleteMultipartUploadResult amazonResult = getS3Client().completeMultipartUpload(request);
+            fileMetadata.put( AssetUtils.CONTENT_LENGTH, written );
             fileMetadata.put( AssetUtils.E_TAG, amazonResult.getETag() );
         }
     }
@@ -220,6 +223,7 @@ public class AwsSdkS3BinaryStore implements BinaryStore {
 
     @Override
     public void delete( UUID appId, Entity entity ) {
-        getS3Client().deleteObject(bucketName, AssetUtils.buildAssetKey( appId, entity ));
+        //getS3Client().deleteObject(bucketName, AssetUtils.buildAssetKey( appId, entity ));
+        getS3Client().deleteObject(new DeleteObjectRequest(bucketName, AssetUtils.buildAssetKey( appId, entity )));
     }
 }
