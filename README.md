@@ -18,7 +18,7 @@ and stack/services/pom.xml
 ```xml
     <dependency>
       <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk</artifactId>
+      <artifactId>aws-java-sdk-s3</artifactId>
     </dependency>
 ```
 then add the AwsSdkS3BinaryStore.java file in the /stack/services/src/main/java/org/apache/usergrid/services/assets/data/ folder.
