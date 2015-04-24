@@ -223,7 +223,6 @@ public class AwsSdkS3BinaryStore implements BinaryStore {
 
     @Override
     public void delete( UUID appId, Entity entity ) {
-        //getS3Client().deleteObject(bucketName, AssetUtils.buildAssetKey( appId, entity ));
         getS3Client().deleteObject(new DeleteObjectRequest(bucketName, AssetUtils.buildAssetKey( appId, entity )));
     }
 }
