@@ -10,7 +10,7 @@ To use it add following dependency in stack/pom.xml
 ```xml
       <dependency>
         <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk</artifactId>
+        <artifactId>aws-java-sdk-s3</artifactId>
         <version>1.9.31</version>
       </dependency>
 ```
