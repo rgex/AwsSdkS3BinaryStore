@@ -68,7 +68,7 @@ public class AwsSdkS3BinaryStore implements BinaryStore {
 
     private static final Logger LOG = LoggerFactory.getLogger(AwsSdkS3BinaryStore.class );
     private static final long FIVE_MB = ( FileUtils.ONE_MB * 5 );
-
+    
     private AmazonS3 s3Client;
     private String accessId;
     private String secretKey;
@@ -177,8 +177,10 @@ public class AwsSdkS3BinaryStore implements BinaryStore {
                 
                 FileInputStream chunck = new FileInputStream(tempFile);
                
-                Boolean isLastPart = partSize != FIVE_MB;
-                      
+                Boolean isLastPart = -1 == (firstByte = chunckableInputStream.read());
+                if(!isLastPart)
+                    chunckableInputStream.unread(firstByte);
+                
                 UploadPartRequest uploadRequest = new UploadPartRequest().withUploadId(initResponse.getUploadId())
                                                                          .withBucketName(bucketName)
                                                                          .withKey(uploadFileName)
